@@ -92,6 +92,21 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     let width = window.innerWidth;
     let active = -1;
 
+    // The first poster goes first: the clips wait so they do not fight it for bandwidth.
+    let posterReady = false;
+    const firstPoster = layers[0]?.querySelector<HTMLImageElement>("img");
+    const posterDone = () => {
+      posterReady = true;
+      stale = true;
+    };
+    if (!firstPoster || firstPoster.complete) {
+      posterReady = true;
+    } else {
+      firstPoster.addEventListener("load", posterDone, { once: true });
+      firstPoster.addEventListener("error", posterDone, { once: true });
+      window.setTimeout(posterDone, 4000);
+    }
+
     const drop = (track: Track) => {
       track.cancel?.abort();
       track.video?.remove();
@@ -176,7 +191,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
 
     const load = async (track: Track, index: number) => {
       const source = pick(index);
-      if (still || stopped || track.state !== "idle") {
+      if (still || stopped || !posterReady || track.state !== "idle") {
         return;
       }
       track.state = "loading";
@@ -262,13 +277,13 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
           drop(track);
         }
         if (track.copy) {
-          // The copy fades instead of sliding under the menu when its chapter ends.
-          const release = track.bottom - viewport;
-          const last = index === tracks.length - 1;
-          const leave = last ? 1 : 1 - clamp01((y - release - viewport * 0.08) / (viewport * 0.3));
-          const enter = index === 0 ? 1 : clamp01((y - (track.top - viewport * 0.5)) / (viewport * 0.35));
-          track.copy.style.opacity = String(ease(Math.min(leave, enter)));
-          track.copy.style.visibility = Math.min(leave, enter) <= 0 ? "hidden" : "visible";
+          // The copy fades out on its own instead of sliding under the menu.
+          const from = index === 0 ? -Infinity : track.top - viewport * 0.55;
+          const to = index === tracks.length - 1 ? Infinity : track.bottom - viewport * 0.75;
+          const away = y < from || y > to;
+          if (away !== (track.copy.dataset.away === "true")) {
+            track.copy.dataset.away = String(away);
+          }
         }
       });
       tracks.forEach((track, index) => {
@@ -359,8 +374,9 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
         drop(track);
         track.layer.style.removeProperty("opacity");
         track.layer.style.removeProperty("z-index");
-        track.copy?.style.removeProperty("opacity");
-        track.copy?.style.removeProperty("visibility");
+        if (track.copy) {
+          delete track.copy.dataset.away;
+        }
       });
     };
   }, [chapters]);

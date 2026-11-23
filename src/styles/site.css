@@ -67,7 +67,7 @@ textarea {
   align-items: center;
   gap: 1.5rem;
   padding: 1rem clamp(1rem, 4vw, 4rem);
-  background: rgb(11 11 11 / 0.92);
+  background: var(--vg-nero);
 }
 .vg-nav__logo {
   display: flex;

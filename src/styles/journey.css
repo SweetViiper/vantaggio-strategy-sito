@@ -33,6 +33,13 @@
 }
 .vj__layer:first-child {
   opacity: 1;
+  /* A few blurred bytes of the first frame, so the stage is never empty while the poster downloads. */
+  background: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAHAAbAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xABjAAADAQEAAAAAAAAAAAAAAAAEAwUBBwEBAQAAAAAAAAAAAAAAAAAAAgMQAAECBgIDAQAAAAAAAAAAAAABEUFxYZHwIRICE2IjQxEAAwEBAQEAAAAAAAAAAAAAAAERAmEScf/AABEIAA4AGAMBIgACEQADEQD/2gAMAwEAAhEDEQA/AOAhnh+fJ9uzUmLTsiQy5V/Dl7MzUmDTk+lsL1eJshGBSqiwy4nQyJ//2Q==") center / cover no-repeat;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 860px) {
+  .vj__layer:first-child {
+    background-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgADMQMqAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xAB5AAACAwEBAQAAAAAAAAAAAAADBQYCBAAHAQEBAQEBAAAAAAAAAAAAAAAABAUDARAAAQIDBAcJAQAAAAAAAAAAAAECEQMSMRNS0pGBkqHRUSGiFARh8EEzceFiEQACAgMBAAMBAAAAAAAAAAAAAQIRIUED0QQScTH/wAARCAArABgDASIAAhEAAxEA/9oADAMBAAIRAxEAPwDws4qu8cdzW5qit5CumHSmy3F7w5HJTUaveBEYyndaVsUnFU3ljUyNDYNs/R1Wt3DrYJUVuJml+Ua1S6fkl6ZuUH00M5b/AAVOg60HSnn61BVVuJnbynyKYmaX5RCBMM105bFlpqZwH134+7jVKphyl5SIsXqTBHLdL9E3vP6uOE7e79LfxuSmpZaparwjznTktWXss4A65v8AGyzgZXqZigv4SZLLP//Z");
+  }
 }
 .vj__poster,
 .vj__video {
@@ -133,6 +140,11 @@
   position: relative;
   width: min(40rem, 48vw);
   pointer-events: auto;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+.vj__copy[data-away="true"] {
+  opacity: 0;
+  visibility: hidden;
 }
 /* Soft dark halo so the copy stays readable over the film. */
 .vj__copy::before {
