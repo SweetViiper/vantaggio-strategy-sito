@@ -19,7 +19,7 @@ for (const page of pages) {
     `<link rel="canonical" href="https://vantaggiostrategy.com${page.path}" />`,
   ].join("\n    ");
   const html = template.replace("<!--head-->", head).replace("<!--app-->", render(page.path));
-  const file = page.path === "/" ? join(client, "index.html") : join(client, page.path, "index.html");
+  const file = page.path === "/" ? join(client, "index.html") : join(client, `${page.path}.html`);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
   console.log("prerendered", page.path);
