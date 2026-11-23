@@ -22,5 +22,10 @@
       "migrations_dir": "migrations"
     }
   ],
+  "send_email": [{ "name": "MAIL", "destination_address": "marco.mencarini@icloud.com" }],
+  "vars": {
+    "NOTIFY_TO": "marco.mencarini@icloud.com",
+    "NOTIFY_FROM": "modulo@vantaggiostrategy.com"
+  },
   "observability": { "enabled": true }
 }
