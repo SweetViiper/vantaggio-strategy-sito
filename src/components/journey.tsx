@@ -306,7 +306,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
           continue;
         }
         // Ease towards the scroll position so fast flicks stay smooth.
-        track.shown += (track.goal - track.shown) * 0.2;
+        track.shown += (track.goal - track.shown) * (onPhone() ? 0.35 : 0.2);
         const time = Math.max(FIRST_FRAME, Math.min(track.shown, 0.999) * (video.duration || 1));
         if (Math.abs(video.currentTime - time) > (onPhone() ? 0.02 : 0.008)) {
           try {

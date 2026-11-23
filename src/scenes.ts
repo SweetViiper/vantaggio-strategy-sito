@@ -4,7 +4,7 @@ import type { JourneyChapter } from "./components/journey";
 
 const media = (n: string) => ({
   clip: `/assets/world/scene-${n}.mp4`,
-  mobileClip: `/assets/world/scene-${n}-mobile.mp4`,
+  mobileClip: `/assets/world/scene-${n}-phone.mp4`,
   mobilePoster: `/assets/world/scene-${n}-mobile-poster.jpg`,
   poster: `/assets/world/scene-${n}-poster.jpg`,
 });
@@ -17,7 +17,7 @@ export const chapters: JourneyChapter[] = [
     kicker: "Agenzia di marketing · Roma",
     title: "Ti portiamo clienti, non like.",
     body: "Non siamo un'agenzia come le altre: tutto quello che facciamo ha un solo scopo, farti vendere di più. Un vantaggio alla volta.",
-    length: 1.5,
+    length: 2.2,
   },
   {
     ...media("02"),
@@ -27,7 +27,7 @@ export const chapters: JourneyChapter[] = [
     title: "Contenuti fatti per vendere.",
     body: "Ogni video nasce per portare una persona un passo più vicina all'acquisto, non per fare numeri che non pagano le fatture.",
     tags: ["Instagram", "TikTok", "Facebook", "LinkedIn o YouTube"],
-    length: 1.5,
+    length: 2.2,
   },
   {
     ...media("03"),
@@ -36,7 +36,7 @@ export const chapters: JourneyChapter[] = [
     title: "Campagne che portano richieste.",
     body: "Meta, TikTok e Google Ads ottimizzate sui clienti che acquisisci davvero, non sui clic. Ogni euro di budget deve poter diventare un contatto.",
     tags: ["Meta Ads", "TikTok Ads", "Google Ads"],
-    length: 1.5,
+    length: 2.2,
   },
   {
     ...media("04"),
@@ -46,7 +46,7 @@ export const chapters: JourneyChapter[] = [
     title: "Nessun contatto resta indietro.",
     body: "Landing page, CRM e automazioni AI rispondono, smistano e ricontattano ogni richiesta, finché non diventa una vendita.",
     tags: ["Landing 3D", "CRM", "Automazioni AI"],
-    length: 1.5,
+    length: 2.2,
   },
   {
     ...media("05"),
@@ -55,6 +55,6 @@ export const chapters: JourneyChapter[] = [
     title: "Contiamo i clienti, non i follower.",
     body: "Nei nostri report trovi contatti, trattative e vendite. È su quei numeri che ci misuri, ed è su quelli che lavoriamo ogni settimana.",
     tags: ["Contatti", "Trattative", "Vendite"],
-    length: 1.7,
+    length: 2.4,
   },
 ];
