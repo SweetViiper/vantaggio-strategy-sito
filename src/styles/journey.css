@@ -42,6 +42,10 @@
 }
 .vj__video {
   z-index: 1;
+  opacity: 0;
+}
+.vj__layer[data-playing="true"] .vj__video {
+  opacity: 1;
 }
 .vj__layer[data-playing="true"] .vj__poster {
   visibility: hidden;
@@ -90,9 +94,13 @@
   text-transform: uppercase;
   cursor: pointer;
 }
-.vj__chapters button:hover,
 .vj__chapters button[aria-current="step"] {
   color: var(--vg-bianco);
+}
+@media (hover: hover) {
+  .vj__chapters button:hover {
+    color: var(--vg-bianco);
+  }
 }
 .vj__chapters button[aria-current="step"] {
   text-decoration: underline;
@@ -191,7 +199,7 @@
   .vj__chapter[data-align="right"] .vj__pin {
     align-items: flex-end;
     justify-content: flex-start;
-    padding: 6.5rem max(1.25rem, env(safe-area-inset-right)) calc(4rem + env(safe-area-inset-bottom))
+    padding: 6.5rem max(1.25rem, env(safe-area-inset-right)) calc(5.5rem + env(safe-area-inset-bottom))
       max(1.25rem, env(safe-area-inset-left));
   }
   .vj__copy {

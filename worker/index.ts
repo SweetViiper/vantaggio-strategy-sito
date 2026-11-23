@@ -82,8 +82,11 @@ async function contact(request: Request, env: Env, ctx: { waitUntil(promise: Pro
 export default {
   async fetch(request: Request, env: Env, ctx: { waitUntil(promise: Promise<unknown>): void }): Promise<Response> {
     const url = new URL(request.url);
-    if (url.hostname === "www.vantaggiostrategy.com") {
+    // One address only: https, without www.
+    const www = url.hostname === "www.vantaggiostrategy.com";
+    if (www || (url.protocol === "http:" && url.hostname === "vantaggiostrategy.com")) {
       url.hostname = "vantaggiostrategy.com";
+      url.protocol = "https:";
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname === "/api/contact") {

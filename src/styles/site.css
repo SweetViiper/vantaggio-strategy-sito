@@ -92,8 +92,10 @@ textarea {
   background: linear-gradient(var(--vg-arancio), var(--vg-arancio)) left bottom / 0 2px no-repeat;
   transition: background-size 0.25s ease;
 }
-.vg-nav__links a:hover {
-  background-size: 100% 2px;
+@media (hover: hover) {
+  .vg-nav__links a:hover {
+    background-size: 100% 2px;
+  }
 }
 .vg-nav__cta {
   padding: 0.7rem 1.1rem;
@@ -108,9 +110,11 @@ textarea {
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
-.vg-nav__cta:hover {
-  background: var(--vg-bianco);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .vg-nav__cta:hover {
+    background: var(--vg-bianco);
+    transform: translateY(-2px);
+  }
 }
 .vg-nav--solid {
   background: var(--vg-nero);
@@ -310,8 +314,10 @@ textarea {
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
   transition: transform 0.2s ease;
 }
-.vg-wa:hover {
-  transform: translateY(-3px);
+@media (hover: hover) {
+  .vg-wa:hover {
+    transform: translateY(-3px);
+  }
 }
 .vg-contact__alt {
   margin: 0.75rem 0 0;
@@ -320,8 +326,8 @@ textarea {
 .vg-wa-float {
   position: fixed;
   z-index: 45;
-  bottom: 1rem;
-  left: 1rem;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom));
   display: grid;
   place-items: center;
   width: 3.25rem;
@@ -373,8 +379,10 @@ textarea {
   margin-top: 0.35rem;
   transition: transform 0.3s ease;
 }
-.vg-group:hover .vg-group__head img {
-  transform: translateY(-6px);
+@media (hover: hover) {
+  .vg-group:hover .vg-group__head img {
+    transform: translateY(-6px);
+  }
 }
 .vg-group__head h3 {
   margin: 0;
@@ -445,9 +453,11 @@ textarea {
   border-left: 1px solid rgb(255 255 255 / 0.18);
   transition: border-color 0.25s ease, background-color 0.25s ease;
 }
-.vg-steps li:hover {
-  border-top-color: var(--vg-arancio);
-  background: rgb(255 255 255 / 0.04);
+@media (hover: hover) {
+  .vg-steps li:hover {
+    border-top-color: var(--vg-arancio);
+    background: rgb(255 255 255 / 0.04);
+  }
 }
 .vg-steps li:last-child {
   border-top-color: var(--vg-arancio);
@@ -602,11 +612,15 @@ textarea {
   filter: brightness(0);
   transition: transform 0.25s ease;
 }
-.vg-send:hover:not(:disabled) {
-  background: var(--vg-bianco);
+@media (hover: hover) {
+  .vg-send:hover:not(:disabled) {
+    background: var(--vg-bianco);
+  }
 }
-.vg-send:hover:not(:disabled) img {
-  transform: translateY(-5px);
+@media (hover: hover) {
+  .vg-send:hover:not(:disabled) img {
+    transform: translateY(-5px);
+  }
 }
 .vg-send:disabled {
   cursor: progress;
@@ -641,9 +655,11 @@ textarea {
   text-transform: uppercase;
   cursor: pointer;
 }
-.vg-ghost:hover {
-  border-color: var(--vg-arancio);
-  color: var(--vg-arancio);
+@media (hover: hover) {
+  .vg-ghost:hover {
+    border-color: var(--vg-arancio);
+    color: var(--vg-arancio);
+  }
 }
 @media (max-width: 860px) {
   .vg-contact__grid,

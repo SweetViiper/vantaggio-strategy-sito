@@ -29,6 +29,7 @@ const PHONE_QUERY = "(hover: none) and (pointer: coarse), (max-width: 860px)";
 interface Track {
   band: HTMLElement;
   layer: HTMLElement;
+  copy: HTMLElement | null;
   top: number;
   bottom: number;
   goal: number;
@@ -39,7 +40,12 @@ interface Track {
   url?: string;
   cancel?: AbortController;
   state: "idle" | "loading" | "ready" | "failed";
+  awake?: boolean;
+  waking?: boolean;
 }
+
+// Never park the playhead on 0: some phones draw nothing there.
+const FIRST_FRAME = 1 / 24;
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const ease = (value: number) => {
@@ -68,6 +74,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     const tracks: Track[] = chapters.map((_, index) => ({
       band: bands[index],
       layer: layers[index],
+      copy: bands[index].querySelector<HTMLElement>(".vj__copy"),
       top: 0,
       bottom: 0,
       goal: 0,
@@ -83,7 +90,6 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     let span = 1;
     let viewport = window.innerHeight;
     let width = window.innerWidth;
-    let touched = false;
     let active = -1;
 
     const drop = (track: Track) => {
@@ -97,6 +103,8 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
       track.url = undefined;
       track.source = undefined;
       track.state = "idle";
+      track.awake = false;
+      track.waking = false;
       track.shown = track.goal;
       delete track.layer.dataset.playing;
     };
@@ -118,16 +126,51 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
       stale = true;
     };
 
+    // The clip stays invisible until the browser has really drawn a frame of it:
+    // an unpainted video on iOS is a black box that would cover the poster.
+    const reveal = (track: Track, video: HTMLVideoElement) => {
+      const show = () => {
+        if (track.video === video) {
+          track.layer.dataset.playing = "true";
+        }
+      };
+      const framed = video as HTMLVideoElement & { requestVideoFrameCallback?: (cb: () => void) => number };
+      if (typeof framed.requestVideoFrameCallback === "function") {
+        framed.requestVideoFrameCallback(show);
+        // Nudge the playhead so a frame is produced even if the page is not scrolling.
+        try {
+          video.currentTime = Math.max(video.currentTime, FIRST_FRAME) + 0.001;
+        } catch {
+          // The next scroll seek will produce the frame.
+        }
+      } else {
+        video.addEventListener("seeked", show, { once: true });
+      }
+    };
+
     // iOS only paints seeked frames after the video has been played once.
-    const wake = async (video?: HTMLVideoElement) => {
-      if (!video || !onPhone()) {
+    const wake = async (track: Track) => {
+      const video = track.video;
+      if (!video || track.awake || track.waking) {
         return;
       }
+      if (!onPhone()) {
+        track.awake = true;
+        reveal(track, video);
+        return;
+      }
+      track.waking = true;
       try {
         await video.play();
         video.pause();
+        if (track.video === video) {
+          track.awake = true;
+          reveal(track, video);
+        }
       } catch {
         // The poster stays until a later gesture lets the video start.
+      } finally {
+        track.waking = false;
       }
     };
 
@@ -171,17 +214,8 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
         video.addEventListener(
           "loadeddata",
           () => {
-            if (touched && track.video === video) {
-              void wake(video);
-            }
-          },
-          { once: true },
-        );
-        video.addEventListener(
-          "seeked",
-          () => {
             if (track.video === video) {
-              track.layer.dataset.playing = "true";
+              void wake(track);
             }
           },
           { once: true },
@@ -208,7 +242,8 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     };
 
     const read = () => {
-      const y = Math.min(span, Math.max(0, window.scrollY - origin));
+      const raw = window.scrollY - origin;
+      const y = Math.min(span, Math.max(0, raw));
       const blend = Math.max(viewport * 0.1, 1);
       let now = 0;
       tracks.forEach((track, index) => {
@@ -222,6 +257,18 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
         track.layer.style.opacity = String(opacity);
         if (y > track.top - viewport * 1.5 && y < track.bottom + viewport * 1.5) {
           void load(track, index);
+        } else if (track.video && raw - track.bottom > viewport * 4) {
+          // Far from the film: give the memory back to the phone.
+          drop(track);
+        }
+        if (track.copy) {
+          // The copy fades instead of sliding under the menu when its chapter ends.
+          const release = track.bottom - viewport;
+          const last = index === tracks.length - 1;
+          const leave = last ? 1 : 1 - clamp01((y - release - viewport * 0.08) / (viewport * 0.3));
+          const enter = index === 0 ? 1 : clamp01((y - (track.top - viewport * 0.5)) / (viewport * 0.35));
+          track.copy.style.opacity = String(ease(Math.min(leave, enter)));
+          track.copy.style.visibility = Math.min(leave, enter) <= 0 ? "hidden" : "visible";
         }
       });
       tracks.forEach((track, index) => {
@@ -245,7 +292,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
         }
         // Ease towards the scroll position so fast flicks stay smooth.
         track.shown += (track.goal - track.shown) * 0.2;
-        const time = Math.min(track.shown, 0.999) * (video.duration || 1);
+        const time = Math.max(FIRST_FRAME, Math.min(track.shown, 0.999) * (video.duration || 1));
         if (Math.abs(video.currentTime - time) > (onPhone() ? 0.02 : 0.008)) {
           try {
             video.currentTime = time;
@@ -279,11 +326,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
       measure();
     };
     const onGesture = () => {
-      if (touched) {
-        return;
-      }
-      touched = true;
-      tracks.forEach((track) => void wake(track.video));
+      tracks.forEach((track) => void wake(track));
     };
 
     jumpRef.current = (index) => {
@@ -299,8 +342,8 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", measure);
-    window.addEventListener("pointerdown", onGesture, { once: true, passive: true });
-    window.addEventListener("touchstart", onGesture, { once: true, passive: true });
+    window.addEventListener("pointerdown", onGesture, { passive: true });
+    window.addEventListener("touchend", onGesture, { passive: true });
     measure();
     raf = window.requestAnimationFrame(loop);
 
@@ -311,11 +354,13 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", measure);
       window.removeEventListener("pointerdown", onGesture);
-      window.removeEventListener("touchstart", onGesture);
+      window.removeEventListener("touchend", onGesture);
       tracks.forEach((track) => {
         drop(track);
         track.layer.style.removeProperty("opacity");
         track.layer.style.removeProperty("z-index");
+        track.copy?.style.removeProperty("opacity");
+        track.copy?.style.removeProperty("visibility");
       });
     };
   }, [chapters]);
