@@ -6,6 +6,26 @@
   background: var(--vg-nero);
   color: var(--vg-bianco);
 }
+/* The first frame, painted as plain page background under the stage: phones
+   show it at once, even before (or without) the film layers being drawn. */
+.vj::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100dvh;
+  content: "";
+  background:
+    url("/assets/world/scene-01-poster.jpg") center / cover no-repeat,
+    url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAHAAbAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xABjAAADAQEAAAAAAAAAAAAAAAAEAwUBBwEBAQAAAAAAAAAAAAAAAAAAAgMQAAECBgIDAQAAAAAAAAAAAAABEUFxYZHwIRICE2IjQxEAAwEBAQEAAAAAAAAAAAAAAAERAmEScf/AABEIAA4AGAMBIgACEQADEQD/2gAMAwEAAhEDEQA/AOAhnh+fJ9uzUmLTsiQy5V/Dl7MzUmDTk+lsL1eJshGBSqiwy4nQyJ//2Q==") center / cover no-repeat;
+  pointer-events: none;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 860px) {
+  .vj::before {
+    background-image: url("/assets/world/scene-01-mobile-poster.jpg"), url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgADMQMqAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xAB5AAACAwEBAQAAAAAAAAAAAAADBQYCBAAHAQEBAQEBAAAAAAAAAAAAAAAABAUDARAAAQIDBAcJAQAAAAAAAAAAAAECEQMSMRNS0pGBkqHRUSGiFARh8EEzceFiEQACAgMBAAMBAAAAAAAAAAAAAQIRIUED0QQScTH/wAARCAArABgDASIAAhEAAxEA/9oADAMBAAIRAxEAPwDws4qu8cdzW5qit5CumHSmy3F7w5HJTUaveBEYyndaVsUnFU3ljUyNDYNs/R1Wt3DrYJUVuJml+Ua1S6fkl6ZuUH00M5b/AAVOg60HSnn61BVVuJnbynyKYmaX5RCBMM105bFlpqZwH134+7jVKphyl5SIsXqTBHLdL9E3vP6uOE7e79LfxuSmpZaparwjznTktWXss4A65v8AGyzgZXqZigv4SZLLP//Z");
+  }
+}
 .vj__stage {
   position: sticky;
   top: 0;
@@ -13,7 +33,6 @@
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  background: var(--vg-nero);
 }
 .vj__film,
 .vj__layer,
@@ -29,17 +48,9 @@
   margin: 0;
   overflow: hidden;
   opacity: 0;
-  will-change: opacity;
 }
 .vj__layer:first-child {
   opacity: 1;
-  /* A few blurred bytes of the first frame, so the stage is never empty while the poster downloads. */
-  background: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAHAAbAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xABjAAADAQEAAAAAAAAAAAAAAAAEAwUBBwEBAQAAAAAAAAAAAAAAAAAAAgMQAAECBgIDAQAAAAAAAAAAAAABEUFxYZHwIRICE2IjQxEAAwEBAQEAAAAAAAAAAAAAAAERAmEScf/AABEIAA4AGAMBIgACEQADEQD/2gAMAwEAAhEDEQA/AOAhnh+fJ9uzUmLTsiQy5V/Dl7MzUmDTk+lsL1eJshGBSqiwy4nQyJ//2Q==") center / cover no-repeat;
-}
-@media (hover: none) and (pointer: coarse), (max-width: 860px) {
-  .vj__layer:first-child {
-    background-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgADMQMqAAD//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgQEBMQExYWFhYWFhoYGhsbGxoaGhobGxsdHR0iIiIdHR0bGx0dICAiIiUmJSMjIiMmJigoKDAwLi44ODpFRVP/xAB5AAACAwEBAQAAAAAAAAAAAAADBQYCBAAHAQEBAQEBAAAAAAAAAAAAAAAABAUDARAAAQIDBAcJAQAAAAAAAAAAAAECEQMSMRNS0pGBkqHRUSGiFARh8EEzceFiEQACAgMBAAMBAAAAAAAAAAAAAQIRIUED0QQScTH/wAARCAArABgDASIAAhEAAxEA/9oADAMBAAIRAxEAPwDws4qu8cdzW5qit5CumHSmy3F7w5HJTUaveBEYyndaVsUnFU3ljUyNDYNs/R1Wt3DrYJUVuJml+Ua1S6fkl6ZuUH00M5b/AAVOg60HSnn61BVVuJnbynyKYmaX5RCBMM105bFlpqZwH134+7jVKphyl5SIsXqTBHLdL9E3vP6uOE7e79LfxuSmpZaparwjznTktWXss4A65v8AGyzgZXqZigv4SZLLP//Z");
-  }
 }
 .vj__poster,
 .vj__video {

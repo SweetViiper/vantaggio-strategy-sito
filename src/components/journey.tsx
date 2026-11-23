@@ -104,7 +104,7 @@ export function Journey({ chapters }: { chapters: JourneyChapter[] }) {
     } else {
       firstPoster.addEventListener("load", posterDone, { once: true });
       firstPoster.addEventListener("error", posterDone, { once: true });
-      window.setTimeout(posterDone, 4000);
+      window.setTimeout(posterDone, 1500);
     }
 
     const drop = (track: Track) => {
